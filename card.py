@@ -29,12 +29,12 @@ class Card(ttk.Checkbutton):
         # get list of cards that user selected(checked card's checkbutton)
         selected_cards = self.selected_cards()
         self.master.game.set_cards(selected_cards)
-        print(len(selected_cards), selected_cards)
         # decide user's point based on selected cards.
         if len(selected_cards) == 3:
             score = self.master.game.calculate_score()
             cards_left = len(self.master.all_images)
-            self.master.info.set(f"Total Points: {score}\nCards Left: {cards_left}")
+            info = f"Total Points: {self.master.game.total_score}\nCards Left: {cards_left}"
+            self.master.info.set(info)
             # destroy selected cards after playing one hand.
             self.destroy_card()
             # Make new 3 cards

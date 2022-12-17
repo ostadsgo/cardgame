@@ -3,7 +3,7 @@ class Game:
 
     def __init__(self, cards=None):
         self.cards = cards
-        self.score = 0
+        self.total_score = 0
 
     def set_cards(self, cards):
         self.cards = cards
@@ -28,22 +28,22 @@ class Game:
         number of symbol in the image be equal: 1 point
         Exact same symbol: 1 point
         Exact same filling (pattern of the image): 1 point
-        If none of the above happend decrease 2 points
+        If none of the above happend decrease 1 points
         """
+        score = 0
         data = self.parse_cards()
         uniques = self.get_uniques(data)
-        for val in uniques.values():
-            if len(val) == 1:
-                self.score += 2
-                break
-        else:  # no breaks
-            self.score -= 2
+        key_num = len(uniques.keys())
+        val_num = sum({len(val) for val in uniques.values()})
+        # if all criteria were different
+        if val_num == 12:
+            score += 3
+        else:
+            score -= 1
 
-        for val in uniques.values():
-            # player couldn't found all diffrence
-            if len(val) < 3:
-                break
-        else:  # player found all diffrent
-            self.score += 3
-
-        return self.score
+        # if just one of the criteria be same
+        if val_num >= 4:
+            score += 2
+        print("Score: ", score)
+        print(uniques, key_num, val_num)
+        self.total_score += score

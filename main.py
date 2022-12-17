@@ -1,9 +1,9 @@
 import tkinter as tk
 from tkinter import ttk
 
-from card import CardContainer, Card
+from card import CardContainer
 
-
+# Main frame: everything goes here.
 class MainFrame(ttk.Frame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
