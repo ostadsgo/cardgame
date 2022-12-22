@@ -1,9 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
-from tkinter import simpledialog
 
-from card import CardContainer
-from game import Game
+from deck import Deck
 
 
 # Main frame: everything goes here.
@@ -18,7 +16,7 @@ class MainFrame(ttk.Frame):
         self.start_page.pack(expand=True, fill=tk.BOTH)
         # Variable to get number of cards from user
         self.cards_number = tk.IntVar()
-        self.cards_number.set(7)
+        self.cards_number.set(22)
         self.info = tk.StringVar()
         self.highest = tk.BooleanVar()
         ttk.Label(self.master, textvariable=self.info).pack()
@@ -44,8 +42,8 @@ class MainFrame(ttk.Frame):
 
     def play(self):
         self.hide_start_page()
-        card_container = CardContainer(self, relief=tk.SOLID, padding=(40, 20))
-        card_container.pack()
+        deck = Deck(self, relief=tk.SOLID, padding=(40, 20))
+        deck.pack()
 
     def play_computer(self):
         pass
