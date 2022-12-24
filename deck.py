@@ -1,11 +1,32 @@
 import tkinter as tk
-
-from os import listdir
-from tkinter import ttk
+import tkinter.ttk as ttk
+import tkinter.messagebox as msgbox
 from random import shuffle
+from os import listdir
 
 from card import Card
 from game import Game
+
+
+class Hand(ttk.Frame):
+    HAND_SIZE = 6
+
+    def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
+        self.master = master
+
+    def number(self, number):
+        """Return number of hand based on user response `number`"""
+        hand_number = number // self.HAND_SIZE
+        self.card_number = hand_number * self.HAND_SIZE
+        return self.card_number
+
+    def make(self, n):
+        x = self.number(n)
+        return [
+            self.images[index - self.size : index]
+            for index in range(self.size, x + 1, self.size)
+        ]
 
 
 class Deck(ttk.Frame):
@@ -18,13 +39,12 @@ class Deck(ttk.Frame):
         # tkinter variables
         self.info = self.master.info
         self.highest_chance = self.master.highest.get()
-        self.user_response = self.master.cards_number.get()
-        # calculate number of cards; make number of cards be multiple of 3
-        self.hands_number = self.user_response // self.HAND_SIZE
-        self.cards_number = self.hands_number * self.HAND_SIZE
-        # list for store all cards on the CardContainer
+        self.user_response = self.master.card_number.get()
+        # Create hands based on user input.
+        self.hand = Hand()
+        self.hands = self.hand.make(self.user_response)
+
         self.cards = []
-        self.hands = []
         # all image's name
         self.all_images = listdir("./images")
         shuffle(self.all_images)
@@ -32,38 +52,12 @@ class Deck(ttk.Frame):
         self.images = self.all_images[: self.cards_number]
         # a Game object to decide players socre after choosing 3 cards.
         self.game = Game()
-        # play
-        # self.play()
+        self.play()
 
     def play(self):
-        # set data to info variable (update label text)
-        self.info.set(f"Total Score: 0  Cards Left: {len(self.images)}")
-
-        """Check if user desired to play with highest changes to win."""
-        # highest chance to win
-        if self.highest_chance:
-            hands = self.make_hands(self.images, 3)
-            hands_score = self.game.hands_score(hands)
-            highest_scored = self.game.sort_hand(hands_score)
-            hands = [item["hand"] for item in highest_scored]
-            images = [card for hand in hands for card in hand]
-            hands = self.make_hands(images, 6)
-            for hand in hands:
-                self.create_cards(hand)
-                print(hands)
-            return
-
-        # normal play
-        hands = self.make_hands(self.images, 6)
-        first_hand, *rest_of_hands = hands
-        # print(first_hand, "\n", rest_of_hands)
-        self.create_cards(first_hand)
-
-    def make_hands(self, images, size=6):
-        return [
-            self.images[index - size : index]
-            for index in range(size, self.cards_number + 1, size)
-        ]
+        s = f"Total Score: {self.game.total_score()}\nCards Left: {len(self.images)}"
+        self.info.set(s)
+        self.next_hand()
 
     def create_cards(self, hand):
         """Create hand of cards."""
@@ -72,20 +66,21 @@ class Deck(ttk.Frame):
             card = Card(self, file, image)
             card.pack(expand=True, fill=tk.BOTH)
             self.cards.append(card)
+            self.images.remove(image)
 
-    def next_hand(self):
-        """Create a hand of cards."""
-        for hand in self.hands:
-            self.create_cards(hand)
-        # delete list of images that used
-        self.hands.pop(0)
+    def next_hand(self, index=0):
+        if self.hands:
+            self.create_cards(self.hands[index])
+            self.hands.pop(0)
+            return
 
-    def remove_cards(self, cards):
-        for card in cards:
+    def remove_cards(self):
+        for card in self.cards:
             card.destroy()
+        self.cards = []
 
     def selected_cards(self):
         return list(filter(lambda card: card.status.get(), self.cards))
 
-    def name_of_selected_cards(self):
-        return [card.name for card in self.selected_cards]
+    def selected_cards_name(self):
+        return [card.name for card in self.selected_cards()]

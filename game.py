@@ -49,12 +49,6 @@ class Game:
         self._total_score += score
         return score
 
-    def make_hands(self, cards):
-        """Get list of cards and created hands of them.
-        Each hand is set of 6 cards.
-        """
-        return [cards[i - 3 : i] for i in range(3, len(cards) + 3, 3)]
-
     def hands_score(self, hands):
         """A hand is set of 6 cards."""
         d = []

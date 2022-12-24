@@ -18,24 +18,8 @@ class Card(ttk.Checkbutton):
         self.config(image=photo, variable=self.status, command=self.onclick)
 
     def onclick(self):
-        # get list of cards that user selected(checked card's checkbutton)
-        selected_cards = self.master.selected_cards()
-        name_of_selected_cards = [card.name for card in selected_cards]
-        # decide user's point based on selected cards.
+        selected_cards = self.master.selected_cards_name()
         if len(selected_cards) == 3:
-            hand_score = self.master.game.calculate_score(name_of_selected_cards)
-            self.update_info()
-            # destroy selected cards after playing one hand.
-            self.destroy_card()
-            # Make new 3 cards
-            self.master.make_card(number=3)
-
-    def update_info(self):
-        cards_left = len(self.master.all_images)
-        total_score = self.master.game.total_score()
-        self.master.info.set(f"Total Score: {total_score}  Cards Left: {cards_left}")
-
-    def destroy_card(self):
-        for card in self.selected_cards():
-            card.destroy()
-            self.master.cards.remove(card)
+            score = self.master.game.calculate_score(selected_cards)
+            self.master.remove_cards()
+            self.master.play()
