@@ -4,13 +4,35 @@ import tkinter.ttk as ttk
 from deck import Deck
 
 
-class InputFrame(ttk.Frmae):
+class InfoFrame(ttk.Frame):
+    def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
+        self.info = tk.StringVar()
+        self._widgets(self)
+
+    def _widgets(self):
+        ttk.Label(self, textvariable=self.info)
+        for child in self.winfo_children():
+            child.pack(expand=True, fill=tk.BOTH)
+
+    def get_info(self):
+        return self.info.get()
+
+    def set_info(self, text):
+        self.info.set(text)
+
+
+class InputFrame(ttk.Frame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         self.cardnum = tk.IntVar()
-        pack_cfg = {"expand": True, "fill": tk.BOTH}
-        ttk.Label(self, text="Enter card number: 1 to 81").pack(**pack_cfg)
-        ttk.Entry(self, textvariable=self.cardnum).pack(**pack_cfg)
+        self._widgets()
+
+    def _widgets(self):
+        ttk.Label(self, text="Enter card number: 1 to 81")
+        ttk.Entry(self, textvariable=self.cardnum)
+        for child in self.winfo_children():
+            child.pack(expand=True, fill=tk.BOTH)
 
     def get_cardnum(self):
         return self.cardnum
@@ -22,14 +44,40 @@ class InputFrame(ttk.Frmae):
         raise ValueError("Card number must be grather or equal to 6.")
 
 
-class Option(ttk.Frame):
+class OptionFrame(ttk.Frame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
+        self.option = tk.StringVar()
+        self._widgets()
+
+    def _widgets(self):
+        ttk.Radiobutton(self, text="Single play", variable=self.option, value="single")
+        ttk.Radiobutton(self, text="Double play", variable=self.option, value="double")
+        ttk.Radiobutton(
+            self, text="Computer play", variable=self.option, value="computer"
+        )
+        ttk.Radiobutton(
+            self, text="Highest Chance", variable=self.option, value="highest"
+        )
+        for child in self.winfo_children():
+            child.pack(expand=True, fill=tk.BOTH)
+
+    def get_option(self):
+        return self.option.get()
 
 
-class Action(ttk.Frame):
+class ActionFrame(ttk.Frame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
+        self._widgets()
+
+    def _widgets(self):
+        ttk.Button(self, text="Play", command=self.play)
+        for child in self.winfo_children():
+            child.pack(expand=True, fill=tk.BOTH)
+
+    def play(self):
+        pass
 
 
 class StartFrame(ttk.Frame):
@@ -70,12 +118,17 @@ class StartFrame(ttk.Frame):
 class MainFrame(ttk.Frame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-        self.info = tk.StringVar()
-        ttk.Label(self, textvariable=self.info).pack(expand=True, fill=tk.BOTH)
-        start_page = StartFrame(self)
-        self.highest = start_page.highest
-        self.card_number = start_page.card_number
-        start_page.show()
+        # top part: input from user
+        inpt = InputFrame(self)
+
+        # center part
+        option = OptionFrame(self)
+
+        # Bottom part
+        action = ActionFrame(self)
+
+        for child in self.winfo_children():
+            child.pack(expand=True, fill=tk.BOTH, pady=10)
 
 
 class MainWindow(tk.Tk):
