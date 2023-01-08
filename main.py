@@ -1,14 +1,14 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 
-from deck import Deck, Hand
+from deck import Deck
 
 
 class InfoFrame(ttk.Frame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         self.info = tk.StringVar()
-        self._widgets(self)
+        self._widgets()
 
     def _widgets(self):
         ttk.Label(self, textvariable=self.info)
@@ -49,17 +49,14 @@ class OptionFrame(ttk.Frame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         self.option = tk.StringVar()
+        self.highest = tk.BooleanVar()
         self._widgets()
 
     def _widgets(self):
-        ttk.Radiobutton(self, text="Single play", variable=self.option, value="single")
-        ttk.Radiobutton(self, text="Double play", variable=self.option, value="double")
-        ttk.Radiobutton(
-            self, text="Computer play", variable=self.option, value="computer"
-        )
-        ttk.Radiobutton(
-            self, text="Highest Chance", variable=self.option, value="highest"
-        )
+        ttk.Radiobutton(self, text="Single Play", variable=self.option, value="single")
+        ttk.Radiobutton(self, text="Play with AI", variable=self.option, value="double")
+        ttk.Radiobutton(self, text="AI Play", variable=self.option, value="computer")
+        ttk.Checkbutton(self, text="Highest Chance", variable=self.highest)
         for child in self.winfo_children():
             child.pack(expand=True, fill=tk.BOTH)
 
@@ -82,24 +79,27 @@ class ActionFrame(ttk.Frame):
 class MainFrame(ttk.Frame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-        # top part: input from user
-        self.input = InputFrame(self)
+        self.start_frame = ttk.Frame(self)
+        self.start_frame.pack(expand=True, fill=tk.BOTH, pady=10)
 
-        # center part
-        option = OptionFrame(self)
-
-        # Bottom part
-        action = ActionFrame(self)
-
-        for child in self.winfo_children():
+        # Need input in other classes
+        self.input = InputFrame(self.start_frame)
+        option = OptionFrame(self.start_frame)
+        action = ActionFrame(self.start_frame)
+        # pack frame inside start_frame
+        for child in self.start_frame.winfo_children():
             child.pack(expand=True, fill=tk.BOTH, pady=10)
 
         action.play_button["command"] = self.play
 
     def play(self):
+        self.hide()
         deck = Deck(self)
-        print(deck.cards)
-        print(deck.hands)
+        deck.show()
+
+    def hide(self):
+        """Hide start_frame"""
+        self.start_frame.pack_forget()
 
 
 class MainWindow(tk.Tk):

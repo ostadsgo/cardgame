@@ -14,6 +14,8 @@ class Hand(ttk.Frame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         self.master = master
+        self.hands = []
+        self.hand = []  # current hand
 
     def cardnum(self, inp):
         """Return card number based on user response `inp`"""
@@ -22,22 +24,34 @@ class Hand(ttk.Frame):
         return self.cardnum
 
     def make(self, cards):
-        return [cards[index - 6 : index] for index in range(6, len(cards) + 1, 6)]
+        self.hands = [cards[index - 6 : index] for index in range(6, len(cards) + 1, 6)]
+        return self.hands
 
     def selected_cards(self):
-        return list(filter(lambda card: card.status.get(), self.cards))
+        print(self.hand)
+        return list(filter(lambda card: card.status.get(), self.hand))
 
     def selected_cards_name(self):
         return [card.name for card in self.selected_cards()]
 
-    def next_hand(self):
+    def next(self):
+        # if hands is not empty
         if self.hands:
-            hand = self.hands.pop(0)
-            self.show_hand(hand)
+            self.hand = self.hands.pop(0)
+            return self.hand
+        # show msg when hands got finished
+        msgbox.showinfo("No Card", "There is not card game is finished.")
+        # TODO: Show user score in the  msg box
+        # TODO: direct user to the main page.
 
-    def show_hand(self, hand):
-        for card in hand:
+
+    def show(self):
+        for card in self.hand:
             card.pack(expand=True, fill=tk.BOTH)
+
+    def remove(self):
+        for card in self.hand:
+            card.destroy()
 
 
 class Deck(ttk.Frame):
@@ -45,6 +59,7 @@ class Deck(ttk.Frame):
         super().__init__(master, **kwargs)
         self.master = master
         self.hand = Hand(self)
+        self.game = Game()
         # Make sure user request card number is multiple of 6
         self.input = self.master.input.get_input()
         self.cardnum = self.hand.cardnum(self.input)
@@ -61,55 +76,10 @@ class Deck(ttk.Frame):
             imgname = f"./images/{self.images.pop(0)}"
             card = Card(self)
             card.set_image(imgname)
-        return card
+            card.name = imgname
+            return card
 
-
-class Deck1(ttk.Frame):
-    # Cards number in a hand
-    HAND_SIZE = 6
-
-    def __init__(self, master, **kwargs):
-        super().__init__(master, **kwargs)
-        self.master = master
-        # tkinter variables
-        self.info = self.master.info
-        self.highest_chance = self.master.highest.get()
-        self.user_response = self.master.card_number.get()
-        # Create hands based on user input.
-        self.hand = Hand()
-        self.hands = self.hand.make(self.user_response)
-
-        self.cards = []
-        # all image's name
-        self.all_images = listdir("./images")
-        shuffle(self.all_images)
-        # truncate all_images to the number user requested
-        self.images = self.all_images[: self.cards_number]
-        # a Game object to decide players socre after choosing 3 cards.
-        self.game = Game()
-        self.play()
-
-    def play(self):
-        s = f"Total Score: {self.game.total_score()}\nCards Left: {len(self.images)}"
-        self.info.set(s)
-        self.next_hand()
-
-    def create_cards(self, hand):
-        """Create hand of cards."""
-        for image in hand:
-            file = f"images/{image}"
-            card = Card(self, file, image)
-            card.pack(expand=True, fill=tk.BOTH)
-            self.cards.append(card)
-            self.images.remove(image)
-
-    def next_hand(self, index=0):
-        if self.hands:
-            self.create_cards(self.hands[index])
-            self.hands.pop(0)
-            return
-
-    def remove_cards(self):
-        for card in self.cards:
-            card.destroy()
-        self.cards = []
+    def show(self):
+        self.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+        self.hand.next()
+        self.hand.show()

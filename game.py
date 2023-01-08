@@ -31,6 +31,7 @@ class Game:
         Exact same filling (pattern of the image): 1 point
         If none of the above happend decrease 1 points
         `card` list of selected card by the user or computer!
+        all unique 3 points;
         """
         score = 0
         data = self.parse_cards(cards)
