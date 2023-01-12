@@ -34,12 +34,8 @@ class Hand(ttk.Frame):
         return [card.name for card in self.selected_cards()]
 
     def next(self):
-        # if hands is not empty
-        if self.hands:
-            self.hand = self.hands.pop(0)
-            return self.hand
-        msgbox.showinfo("No Card", "There is not card; game is finished.")
-        self.deck.start_menu()
+        self.hand = self.hands.pop(0)
+        return self.hand
 
     def show(self):
         for card in self.hand:
@@ -76,10 +72,24 @@ class Deck(ttk.Frame):
             card.set_image(imgname)
             return card
 
-    def show(self):
-        self.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+    def next_hand(self):
+        if self.hand.hands:
+            self.hand.remove()
+            self.hand.next()
+            self.hand.show()
+            return
+
+        msgbox.showinfo("No Card", "There is not card; game is finished.")
+        self.start_menu()
+
+    def first_hand(self):
         self.hand.next()
         self.hand.show()
+
+    def show(self):
+        self.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+        # display first hand
+        self.first_hand()
 
     def update_score(self):
         self.info.set_info(self.game.total_score())

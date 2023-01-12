@@ -28,7 +28,5 @@ class Card(ttk.Checkbutton):
         selected_cards = self.hand.selected_cards_name()
         if len(selected_cards) == 3:
             self.game.calculate_score(selected_cards)
-            self.hand.remove()
-            self.hand.next()
-            self.hand.show()
             self.deck.update_score()
+            self.deck.next_hand()
