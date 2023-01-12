@@ -13,7 +13,7 @@ class Hand(ttk.Frame):
 
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-        self.master = master
+        self.deck = master
         self.hands = []
         self.hand = []  # current hand
 
@@ -28,7 +28,6 @@ class Hand(ttk.Frame):
         return self.hands
 
     def selected_cards(self):
-        print(self.hand)
         return list(filter(lambda card: card.status.get(), self.hand))
 
     def selected_cards_name(self):
@@ -39,11 +38,8 @@ class Hand(ttk.Frame):
         if self.hands:
             self.hand = self.hands.pop(0)
             return self.hand
-        # show msg when hands got finished
-        msgbox.showinfo("No Card", "There is not card game is finished.")
-        # TODO: Show user score in the  msg box
-        # TODO: direct user to the main page.
-
+        msgbox.showinfo("No Card", "There is not card; game is finished.")
+        self.deck.start_menu()
 
     def show(self):
         for card in self.hand:
@@ -63,6 +59,8 @@ class Deck(ttk.Frame):
         # Make sure user request card number is multiple of 6
         self.input = self.master.input.get_input()
         self.cardnum = self.hand.cardnum(self.input)
+        # update score info
+        self.info = self.master.info
         # read all images from computer storage
         self.images = listdir("./images")
         shuffle(self.images)
@@ -76,10 +74,17 @@ class Deck(ttk.Frame):
             imgname = f"./images/{self.images.pop(0)}"
             card = Card(self)
             card.set_image(imgname)
-            card.name = imgname
             return card
 
     def show(self):
         self.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
         self.hand.next()
         self.hand.show()
+
+    def update_score(self):
+        self.info.set_info(self.game.total_score())
+
+    def start_menu(self):
+        """Back to main menu"""
+        self.pack_forget()
+        self.master.start_show()

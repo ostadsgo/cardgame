@@ -7,9 +7,10 @@ class Card(ttk.Checkbutton):
 
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-        self.master = master
-        self.hand = self.master.hand
-        self.game = self.master.game
+        self.deck = master
+        self.hand = self.deck.hand
+        self.info = self.deck.info
+        self.game = self.deck.game
         self.name = ""
         # card variables
         self.status = tk.BooleanVar()
@@ -21,11 +22,13 @@ class Card(ttk.Checkbutton):
         self.image = photo
         # display image on checkbutton
         self.config(image=photo)
+        self.name = imgname
 
     def onclick(self):
         selected_cards = self.hand.selected_cards_name()
         if len(selected_cards) == 3:
-            score = self.game.calculate_score(selected_cards)
+            self.game.calculate_score(selected_cards)
             self.hand.remove()
             self.hand.next()
             self.hand.show()
+            self.deck.update_score()

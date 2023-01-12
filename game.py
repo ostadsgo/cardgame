@@ -1,7 +1,7 @@
 class Game:
     """Game logic"""
 
-    def __init__(self, cards=None):
+    def __init__(self):
         self._total_score = 0
 
     def total_score(self):

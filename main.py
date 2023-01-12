@@ -79,6 +79,8 @@ class ActionFrame(ttk.Frame):
 class MainFrame(ttk.Frame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
+        self.info = InfoFrame(self, relief=tk.GROOVE)
+        self.info.pack(expand=True, fill=tk.BOTH, pady=10)
         self.start_frame = ttk.Frame(self)
         self.start_frame.pack(expand=True, fill=tk.BOTH, pady=10)
 
@@ -93,13 +95,19 @@ class MainFrame(ttk.Frame):
         action.play_button["command"] = self.play
 
     def play(self):
-        self.hide()
+        # TODO: Play based on options
+        self.info.set_info(0)
+        self.start_hide()
         deck = Deck(self)
         deck.show()
 
-    def hide(self):
+    def start_hide(self):
         """Hide start_frame"""
         self.start_frame.pack_forget()
+
+    def start_show(self):
+        self.info.set_info(0)
+        self.start_frame.pack(expand=True, fill=tk.BOTH, pady=10)
 
 
 class MainWindow(tk.Tk):
